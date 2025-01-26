@@ -1,8 +1,10 @@
 import ProductImageUpload from "@/components/admin-view/image-upload";
 import { Button } from "@/components/ui/button";
 import { addFeatureImage, getFeatureImages } from "@/store/common-slice";
+import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 function AdminDashboard() {
   const [imageFile, setImageFile] = useState(null);
@@ -21,6 +23,19 @@ function AdminDashboard() {
         setUploadedImageUrl("");
       }
     });
+  }
+
+  async function handleDeleteFeatureImage(id) {
+    try {
+      const response = await axios.delete(
+        `https://ecom-spii.onrender.com/api/common/feature/delete/${id}`
+      );
+      if (response.data.success) {
+        dispatch(getFeatureImages());
+      }
+    } catch (error) {
+      console.error("Failed to delete feature image:", error);
+    }
   }
 
   useEffect(() => {
@@ -47,11 +62,19 @@ function AdminDashboard() {
       <div className="flex flex-col gap-4 mt-5">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((featureImgItem) => (
-              <div className="relative">
+              <div className="relative group">
                 <img
                   src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover rounded-t-lg"
+                  className="w-full h-[300px] object-cover rounded-lg"
                 />
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleDeleteFeatureImage(featureImgItem._id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             ))
           : null}

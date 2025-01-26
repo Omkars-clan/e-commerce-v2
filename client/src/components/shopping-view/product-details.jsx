@@ -42,7 +42,9 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 Out of Stock
               </Button>
             ) : (
-              <Button className="w-full">Add to Cart</Button>
+              <Button className="w-full hover:bg-[#0f1729] transition-colors">
+                Buy Now
+              </Button>
             )}
           </div>
         </div>

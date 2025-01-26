@@ -32,6 +32,16 @@ function ShoppingProductTile({
           </div>
           <Badge>{product?.category}</Badge>
         </div>
+        <Button 
+          className="w-full mt-4 hover:bg-[#0f1729] hover:text-white transition-colors" 
+          variant="outline"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleGetProductDetails(product?._id);
+          }}
+        >
+          Buy Now
+        </Button>
       </CardContent>
     </Card>
   );
