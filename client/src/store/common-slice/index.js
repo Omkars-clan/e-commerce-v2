@@ -10,7 +10,7 @@ export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
     const response = await axios.get(
-      `https://ecom-spii.onrender.com/api/common/feature/get`
+      `https://krishna-12km.onrender.com/api/common/feature/get`
     );
 
     return response.data;
@@ -21,7 +21,7 @@ export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
     const response = await axios.post(
-      `https://ecom-spii.onrender.com/api/common/feature/add`,
+      `https://krishna-12km.onrender.com/api/common/feature/add`,
       { image }
     );
 

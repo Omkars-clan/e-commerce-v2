@@ -3,6 +3,13 @@ const Product = require("../../models/Product");
 
 const handleImageUpload = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const url = "data:" + req.file.mimetype + ";base64," + b64;
     const result = await imageUploadUtil(url);
@@ -13,9 +20,9 @@ const handleImageUpload = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred during image upload",
     });
   }
 };
@@ -24,7 +31,7 @@ const handleImageUpload = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     const {
-      image,
+      images,
       title,
       description,
       category,
@@ -35,7 +42,7 @@ const addProduct = async (req, res) => {
     } = req.body;
 
     const newlyCreatedProduct = new Product({
-      image,
+      images,
       title,
       description,
       category,
@@ -54,7 +61,7 @@ const addProduct = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred",
     });
   }
 };
@@ -82,7 +89,7 @@ const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      image,
+      images,
       title,
       description,
       category,
@@ -92,33 +99,30 @@ const editProduct = async (req, res) => {
       totalStock,
     } = req.body;
 
-    let findProduct = await Product.findById(id);
-    if (!findProduct)
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        images,
+        title,
+        description,
+        category,
+        brand,
+        price,
+        salePrice,
+        totalStock,
+      },
+      { new: true }
+    );
 
-    findProduct.title = title || findProduct.title;
-    findProduct.description = description || findProduct.description;
-    findProduct.category = category || findProduct.category;
-    findProduct.brand = brand || findProduct.brand;
-    findProduct.price = price === "" ? 0 : price || findProduct.price;
-    findProduct.salePrice =
-      salePrice === "" ? 0 : salePrice || findProduct.salePrice;
-    findProduct.totalStock = totalStock || findProduct.totalStock;
-    findProduct.image = image || findProduct.image;
-
-    await findProduct.save();
     res.status(200).json({
       success: true,
-      data: findProduct,
+      data: updatedProduct,
     });
   } catch (e) {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred",
     });
   }
 };

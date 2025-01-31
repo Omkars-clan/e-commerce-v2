@@ -16,6 +16,16 @@ import {
   UmbrellaIcon,
   WashingMachine,
   WatchIcon,
+  Sofa,
+  Table,
+  Wallpaper,
+  Blinds, // Changed from Curtains to Blinds which exists in lucide-react
+  Lightbulb,
+  Home,
+  Package,
+  Lamp,
+  TreePine,
+  Paintbrush,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -23,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
+  clearProductDetails,
 } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
@@ -31,21 +42,26 @@ import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 
 const categoriesWithIcon = [
-  { id: "men", label: "Men", icon: ShirtIcon },
-  { id: "women", label: "Women", icon: CloudLightning },
-  { id: "kids", label: "Kids", icon: BabyIcon },
-  { id: "accessories", label: "Accessories", icon: WatchIcon },
-  { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
+  { id: "sofas", label: "Sofa & Recliners", icon: Sofa },
+  { id: "tables", label: "Tables", icon: Table },
+  { id: "wallpapers", label: "Wallpapers", icon: Wallpaper },
+  { id: "curtains", label: "Curtains & Blinds", icon: Blinds }, // Updated to use Blinds icon
+  { id: "lights", label: "Interior Lights", icon: Lightbulb },
+  { id: "decoration", label: "Home Decoration", icon: Home },
+  { id: "essentials", label: "Home Essentials", icon: Package },
+  { id: "ceiling", label: "Ceiling Decoration", icon: Lamp }, // Updated to use Lamp
+  { id: "outdoor", label: "Outdoor Items", icon: TreePine },
+  { id: "custom", label: "Customization", icon: Paintbrush },
 ];
 
-const brandsWithIcon = [
-  { id: "nike", label: "Nike", icon: Shirt },
-  { id: "adidas", label: "Adidas", icon: WashingMachine },
-  { id: "puma", label: "Puma", icon: ShoppingBasket },
-  { id: "levi", label: "Levi's", icon: Airplay },
-  { id: "zara", label: "Zara", icon: Images },
-  { id: "h&m", label: "H&M", icon: Heater },
-];
+// const brandsWithIcon = [
+//   { id: "nike", label: "Nike", icon: Shirt },
+//   { id: "adidas", label: "Adidas", icon: WashingMachine },
+//   { id: "puma", label: "Puma", icon: ShoppingBasket },
+//   { id: "levi", label: "Levi's", icon: Airplay },
+//   { id: "zara", label: "Zara", icon: Images },
+//   { id: "h&m", label: "H&M", icon: Heater },
+// ];
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
@@ -61,12 +77,12 @@ function ShoppingHome() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  function handleNavigateToListingPage(getCurrentItem, section) {
+  function handleNavigateToListingPage(getCurrentItem) {
     sessionStorage.removeItem("filters");
     const currentFilter = {
-      [section]: [getCurrentItem.id],
+      category: [getCurrentItem.id],
     };
-
+    console.log("Setting filter:", currentFilter);
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
     navigate(`/shop/listing`);
   }
@@ -102,9 +118,15 @@ function ShoppingHome() {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearProductDetails());
+    };
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[600px] overflow-hidden">
+      <div className="relative w-full h-[200px] md:h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
               <img
@@ -148,17 +170,16 @@ function ShoppingHome() {
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by category
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categoriesWithIcon.map((categoryItem) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {categoriesWithIcon.map((category) => (
               <Card
-                onClick={() =>
-                  handleNavigateToListingPage(categoryItem, "category")
-                }
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                key={category.id}
+                className="cursor-pointer hover:bg-accent transition-colors"
+                onClick={() => handleNavigateToListingPage(category)}
               >
                 <CardContent className="flex flex-col items-center justify-center p-6">
-                  <categoryItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{categoryItem.label}</span>
+                  <category.icon className="w-8 h-8 mb-2" />
+                  <span className="text-sm font-medium text-center">{category.label}</span>
                 </CardContent>
               </Card>
             ))}
@@ -166,7 +187,7 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-12 bg-gray-50">
+      {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -183,7 +204,7 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="py-12">
         <div className="container mx-auto px-4">

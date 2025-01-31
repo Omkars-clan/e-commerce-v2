@@ -38,14 +38,11 @@ function createSearchParamsHelper(filterParams) {
 }
 
 function ShoppingListing() {
-  const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
-  );
-  const { user } = useSelector((state) => state.auth);
-  const [filters, setFilters] = useState({});
-  const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState("price-lowtohigh");
+  const dispatch = useDispatch();
+  const { productList, productDetails } = useSelector((state) => state.shopProducts);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
 
@@ -83,23 +80,23 @@ function ShoppingListing() {
   }
 
   useEffect(() => {
-    setSort("price-lowtohigh");
-    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, [categorySearchParam]);
+    // Load filters from sessionStorage when component mounts
+    const savedFilters = JSON.parse(sessionStorage.getItem("filters")) || {};
+    console.log("Loaded filters:", savedFilters); // Add this for debugging
+    setFilters(savedFilters);
+  }, []);
 
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
-      const createQueryString = createSearchParamsHelper(filters);
-      setSearchParams(new URLSearchParams(createQueryString));
-    }
-  }, [filters]);
-
-  useEffect(() => {
-    if (filters !== null && sort !== null)
+      console.log("Applying filters:", filters); // Add this for debugging
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({
+          filterParams: filters,
+          sortParams: sort,
+        })
       );
-  }, [dispatch, sort, filters]);
+    }
+  }, [filters, sort, dispatch]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);

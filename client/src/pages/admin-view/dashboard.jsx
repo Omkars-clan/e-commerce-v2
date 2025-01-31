@@ -28,7 +28,7 @@ function AdminDashboard() {
   async function handleDeleteFeatureImage(id) {
     try {
       const response = await axios.delete(
-        `https://ecom-spii.onrender.com/api/common/feature/delete/${id}`
+        `https://krishna-12km.onrender.com/api/common/feature/delete/${id}`
       );
       if (response.data.success) {
         dispatch(getFeatureImages());

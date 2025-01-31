@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const authRouter = require("./routes/auth/auth-routes");
 const adminProductsRouter = require("./routes/admin/products-routes");
+const shopProductsRouter = require("./routes/shop/products-routes");
 
 const shopSearchRouter = require("./routes/shop/search-routes");
 
@@ -13,7 +14,7 @@ const commonFeatureRouter = require("./routes/common/feature-routes");
 //create a separate file for this and then import/use that file here
 
 mongoose
-  .connect("mongodb+srv://norman:LH0rJQd2GgLHIe4I@norman.93rvs.mongodb.net/finaldb")
+  .connect("mongodb+srv://omkarsclan:qwertyuiop@cluster0.lfpy8.mongodb.net/krishna")
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
@@ -24,7 +25,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://ecommerce-omkar.vercel.app",
+      "https://krishna-accessories.vercel.app",
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
@@ -42,6 +43,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
+app.use("/api/shop/products", shopProductsRouter);
 
 app.use("/api/shop/search", shopSearchRouter);
 

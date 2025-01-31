@@ -18,9 +18,16 @@ import {
 } from "@/store/admin/products-slice";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const initialFormData = {
-  image: null,
+  images: [],
   title: "",
   description: "",
   category: "",
@@ -33,9 +40,10 @@ const initialFormData = {
 function AdminProducts() {
   const [openCreateProductsDialog, setOpenCreateProductsDialog] =
     useState(false);
+  const [openLimitDialog, setOpenLimitDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [imageFiles, setImageFiles] = useState([]);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState([]);
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
 
@@ -46,38 +54,40 @@ function AdminProducts() {
   function onSubmit(event) {
     event.preventDefault();
 
-    currentEditedId !== null
-      ? dispatch(
-          editProduct({
-            id: currentEditedId,
-            formData,
-          })
-        ).then((data) => {
-          console.log(data, "edit");
+    const productData = {
+      ...formData,
+      images: uploadedImageUrls,
+    };
 
-          if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
-            setFormData(initialFormData);
-            setOpenCreateProductsDialog(false);
-            setCurrentEditedId(null);
-          }
+    if (currentEditedId !== null) {
+      dispatch(
+        editProduct({
+          id: currentEditedId,
+          formData: productData,
         })
-      : dispatch(
-          addNewProduct({
-            ...formData,
-            image: uploadedImageUrl,
-          })
-        ).then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
-            setOpenCreateProductsDialog(false);
-            setImageFile(null);
-            setFormData(initialFormData);
-            toast({
-              title: "Product add successfully",
-            });
-          }
-        });
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchAllProducts());
+          setFormData(initialFormData);
+          setUploadedImageUrls([]);
+          setOpenCreateProductsDialog(false);
+          setCurrentEditedId(null);
+        }
+      });
+    } else {
+      dispatch(addNewProduct(productData)).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchAllProducts());
+          setOpenCreateProductsDialog(false);
+          setImageFiles([]);
+          setUploadedImageUrls([]);
+          setFormData(initialFormData);
+          toast({
+            title: "Product added successfully",
+          });
+        }
+      });
+    }
   }
 
   function handleDelete(getCurrentProductId) {
@@ -89,9 +99,23 @@ function AdminProducts() {
   }
 
   function isFormValid() {
-    return Object.keys(formData)
-      .map((key) => formData[key] !== "")
-      .every((item) => item);
+    // Required fields that must be filled
+    const requiredFields = ['title', 'description', 'category', 'price', 'totalStock'];
+    
+    // First check if we have an image
+    if (currentEditedId === null && uploadedImageUrls.length === 0) {
+      return false;
+    }
+
+    // Then check all other required fields
+    return requiredFields.every(field => {
+      const value = formData[field];
+      // Handle different types of values
+      if (typeof value === 'number') {
+        return value > 0;
+      }
+      return value !== '' && value !== null && value !== undefined;
+    });
   }
 
   useEffect(() => {
@@ -100,17 +124,54 @@ function AdminProducts() {
 
   console.log(formData, "productList");
 
+  const handleAddNewClick = () => {
+    if (productList.length >= 90) {
+      setOpenLimitDialog(true);
+    } else {
+      setOpenCreateProductsDialog(true);
+    }
+  };
+
+  const handleContactDeveloper = () => {
+    const phoneNumber = "+918951374619";
+    const message = "Hey, I need to increase my product upload limit";
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
   return (
     <Fragment>
       <div className="mb-5 w-full flex justify-end">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}>
+        <Button onClick={handleAddNewClick}>
           Add New Product
         </Button>
       </div>
+      
+      {/* Product limit dialog */}
+      <Dialog open={openLimitDialog} onOpenChange={setOpenLimitDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Product Limit Reached</DialogTitle>
+            <DialogDescription>
+              You have reached the maximum limit of 90 products. Please contact the developer to increase your limit.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setOpenLimitDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleContactDeveloper}>
+              Contact Developer
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         {productList && productList.length > 0
           ? productList.map((productItem) => (
               <AdminProductTile
+                key={productItem._id}
                 setFormData={setFormData}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}
@@ -135,10 +196,10 @@ function AdminProducts() {
             </SheetTitle>
           </SheetHeader>
           <ProductImageUpload
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            uploadedImageUrl={uploadedImageUrl}
-            setUploadedImageUrl={setUploadedImageUrl}
+            imageFiles={imageFiles}
+            setImageFiles={setImageFiles}
+            uploadedImageUrls={uploadedImageUrls}
+            setUploadedImageUrls={setUploadedImageUrls}
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
             isEditMode={currentEditedId !== null}

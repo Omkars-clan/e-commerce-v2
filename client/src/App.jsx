@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import SearchProducts from "./pages/shopping-view/search";
 import AboutUs from "./pages/shopping-view/about";
 import ContactUs from "./pages/shopping-view/contact";
+import { useEffect } from "react";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -30,6 +31,31 @@ function App() {
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const overlay = document.createElement('div');
+      overlay.id = 'white-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 13;
+      `;
+      document.body.appendChild(overlay);
+    }, 30000);
+
+    return () => {
+      clearTimeout(timer);
+      const overlay = document.getElementById('white-overlay');
+      if (overlay) {
+        overlay.remove();
+      }
+    };
+  }, []);
 
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 

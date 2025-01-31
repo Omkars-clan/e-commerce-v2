@@ -7,11 +7,11 @@ import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
 
 function ProductImageUpload({
-  imageFile,
-  setImageFile,
+  imageFiles = [],
+  setImageFiles,
   imageLoadingState,
-  uploadedImageUrl,
-  setUploadedImageUrl,
+  uploadedImageUrls = [],
+  setUploadedImageUrls,
   setImageLoadingState,
   isEditMode,
   isCustomStyling = false,
@@ -20,41 +20,24 @@ function ProductImageUpload({
 
   console.log(isEditMode, "isEditMode");
 
-  function handleImageFileChange(event) {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) setImageFile(selectedFile);
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
-  }
-
-  function handleRemoveImage() {
-    setImageFile(null);
-    setUploadedImageUrl("");
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-  }
-
-  async function uploadImageToCloudinary() {
+  async function uploadImageToCloudinary(file) {
     setImageLoadingState(true);
-    const data = new FormData();
-    data.append("my_file", imageFile);
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
       const response = await axios.post(
-        "https://ecom-spii.onrender.com/api/admin/products/upload-image",
-        data
+        "https://krishna-12km.onrender.com/api/admin/products/upload-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
-      if (response?.data?.success) {
-        setUploadedImageUrl(response.data.result.url);
+      if (response.data.success) {
+        setUploadedImageUrls(prev => [...prev, response.data.result.secure_url]);
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -63,62 +46,58 @@ function ProductImageUpload({
     }
   }
 
-  useEffect(() => {
-    if (imageFile !== null) uploadImageToCloudinary();
-  }, [imageFile]);
+  const handleImageFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImageFiles(prev => [...prev, ...files]);
+    files.forEach(file => uploadImageToCloudinary(file));
+  };
+
+  const handleRemoveImage = (index) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadedImageUrls(prev => prev.filter((_, i) => i !== index));
+  };
 
   return (
-    <div
-      className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
-    >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
-      <div
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        className="border-2 border-dashed rounded-lg p-4"
-      >
+    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+      <Label className="text-lg font-semibold mb-2 block">Upload Images</Label>
+      <div className="border-2 border-dashed rounded-lg p-4">
         <Input
           id="image-upload"
           type="file"
+          multiple
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
           accept="image/*"
         />
-        {!imageFile && !uploadedImageUrl ? (
-          <Label
-            htmlFor="image-upload"
-            className="flex flex-col items-center justify-center h-32 cursor-pointer"
-          >
-            <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
-          </Label>
-        ) : imageLoadingState ? (
-          <Skeleton className="h-32 bg-gray-100" />
-        ) : (
-          <div className="flex items-center justify-between">
-            {uploadedImageUrl ? (
+        
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {uploadedImageUrls?.map((url, index) => (
+            <div key={index} className="relative">
               <img 
-                src={uploadedImageUrl} 
-                alt="Uploaded preview" 
-                className="h-32 object-contain mr-4"
+                src={url} 
+                alt={`Product ${index + 1}`} 
+                className="h-32 w-full object-cover rounded"
               />
-            ) : null}
-            <div className="flex items-center flex-1">
-              <FileIcon className="w-8 text-primary mr-2 h-8" />
-              <p className="text-sm font-medium flex-1">{imageFile?.name}</p>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2"
+                onClick={() => handleRemoveImage(index)}
+              >
+                <XIcon className="w-4 h-4" />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleRemoveImage}
-            >
-              <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
-            </Button>
-          </div>
-        )}
+          ))}
+        </div>
+
+        <Label
+          htmlFor="image-upload"
+          className="flex flex-col items-center justify-center h-32 cursor-pointer"
+        >
+          <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
+          <span>Click to upload more images</span>
+        </Label>
       </div>
     </div>
   );

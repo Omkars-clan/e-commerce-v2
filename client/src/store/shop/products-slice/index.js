@@ -10,20 +10,22 @@ const initialState = {
 export const fetchAllFilteredProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async ({ filterParams, sortParams }) => {
-    console.log(fetchAllFilteredProducts, "fetchAllFilteredProducts");
-
-    const query = new URLSearchParams({
-      ...filterParams,
-      sortBy: sortParams,
-    });
-
-    const result = await axios.get(
-      `https://ecom-spii.onrender.com/api/admin/products/get?${query}`
-    );
-
-    console.log(result);
-
-    return result?.data;
+    try {
+      console.log("Filter Params:", filterParams);
+      const response = await axios.get(
+        `https://krishna-12km.onrender.com/api/shop/products/get`,
+        {
+          params: {
+            filterParams: JSON.stringify(filterParams),
+            sortParams,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
   }
 );
 
@@ -31,9 +33,8 @@ export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
     const result = await axios.get(
-      `https://ecom-spii.onrender.com/api/shop/products/get/${id}`
+      `https://krishna-12km.onrender.com/api/shop/products/get/${id}`
     );
-
     return result?.data;
   }
 );
@@ -42,9 +43,9 @@ const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
   initialState,
   reducers: {
-    setProductDetails: (state) => {
+    clearProductDetails: (state) => {
       state.productDetails = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -73,6 +74,5 @@ const shoppingProductSlice = createSlice({
   },
 });
 
-export const { setProductDetails } = shoppingProductSlice.actions;
-
+export const { clearProductDetails } = shoppingProductSlice.actions;
 export default shoppingProductSlice.reducer;

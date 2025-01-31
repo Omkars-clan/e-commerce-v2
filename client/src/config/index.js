@@ -50,7 +50,8 @@ export const addProductFormElements = [
   {
     label: "Description",
     name: "description",
-    componentType: "textarea",
+    componentType: "input",
+    type: "text",
     placeholder: "Enter product description",
   },
   {
@@ -58,24 +59,16 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", label: "Men" },
-      { id: "women", label: "Women" },
-      { id: "kids", label: "Kids" },
-      { id: "accessories", label: "Accessories" },
-      { id: "footwear", label: "Footwear" },
-    ],
-  },
-  {
-    label: "Brand",
-    name: "brand",
-    componentType: "select",
-    options: [
-      { id: "nike", label: "Nike" },
-      { id: "adidas", label: "Adidas" },
-      { id: "puma", label: "Puma" },
-      { id: "levi", label: "Levi's" },
-      { id: "zara", label: "Zara" },
-      { id: "h&m", label: "H&M" },
+      { id: "sofas", label: "Sofa & Recliners" },
+      { id: "tables", label: "Tables" },
+      { id: "wallpapers", label: "Wallpapers" },
+      { id: "curtains", label: "Curtains & Blinds" },
+      { id: "lights", label: "Interior Lights" },
+      { id: "decoration", label: "Home Decoration" },
+      { id: "essentials", label: "Home Essentials" },
+      { id: "ceiling", label: "Ceiling Decoration" },
+      { id: "outdoor", label: "Outdoor Items" },
+      { id: "custom", label: "Customization" },
     ],
   },
   {
@@ -112,21 +105,21 @@ export const shoppingViewHeaderMenuItems = [
     label: "All Products",
     path: "/shop/listing",
   },
-  {
-    id: "men",
-    label: "Men",
-    path: "/shop/listing",
-  },
-  {
-    id: "women",
-    label: "Women",
-    path: "/shop/listing",
-  },
-  {
-    id: "kids",
-    label: "Kids",
-    path: "/shop/listing",
-  },
+  // {
+  //   id: "men",
+  //   label: "Men",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "women",
+  //   label: "Women",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "kids",
+  //   label: "Kids",
+  //   path: "/shop/listing",
+  // },
   {
     id: "about",
     label: "About Us",
@@ -137,14 +130,24 @@ export const shoppingViewHeaderMenuItems = [
     label: "Contact Us",
     path: "/shop/contact",
   },
+  {
+    id: "search",
+    label: "Search",
+    path: "/shop/search",
+  },
 ];
 
 export const categoryOptionsMap = {
-  men: "Men",
-  women: "Women",
-  kids: "Kids",
-  accessories: "Accessories",
-  footwear: "Footwear",
+  sofas: "Sofa & Recliners",
+  tables: "Tables", 
+  wallpapers: "Wallpapers",
+  curtains: "Curtains & Blinds",
+  lights: "Interior Lights",
+  decoration: "Home Decoration",
+  essentials: "Home Essentials",
+  ceiling: "Ceiling Decoration",
+  outdoor: "Outdoor Items",
+  custom: "Customization"
 };
 
 export const brandOptionsMap = {
@@ -158,20 +161,25 @@ export const brandOptionsMap = {
 
 export const filterOptions = {
   category: [
-    { id: "men", label: "Men" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
-    { id: "accessories", label: "Accessories" },
-    { id: "footwear", label: "Footwear" },
+    { id: "sofas", label: "Sofa & Recliners" },
+    { id: "tables", label: "Tables" },
+    { id: "wallpapers", label: "Wallpapers" },
+    { id: "curtains", label: "Curtains & Blinds" },
+    { id: "lights", label: "Interior Lights" },
+    { id: "decoration", label: "Home Decoration" },
+    { id: "essentials", label: "Home Essentials" },
+    { id: "ceiling", label: "Ceiling Decoration" },
+    { id: "outdoor", label: "Outdoor Items" },
+    { id: "custom", label: "Customization" },
   ],
-  brand: [
-    { id: "nike", label: "Nike" },
-    { id: "adidas", label: "Adidas" },
-    { id: "puma", label: "Puma" },
-    { id: "levi", label: "Levi's" },
-    { id: "zara", label: "Zara" },
-    { id: "h&m", label: "H&M" },
-  ],
+  // brand: [
+  //   { id: "nike", label: "Nike" },
+  //   { id: "adidas", label: "Adidas" },//perm
+  //   { id: "puma", label: "Puma" },
+  //   { id: "levi", label: "Levi's" },
+  //   { id: "zara", label: "Zara" },
+  //   { id: "h&m", label: "H&M" },
+  // ],
 };
 
 export const sortOptions = [
