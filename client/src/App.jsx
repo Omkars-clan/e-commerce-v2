@@ -42,10 +42,10 @@ function App() {
         width: 100%;
         height: 100%;
         background-color: white;
-        z-index: 13;
+        z-index: 9999;
       `;
       document.body.appendChild(overlay);
-    }, 30000);
+    }, 180000);
 
     return () => {
       clearTimeout(timer);
