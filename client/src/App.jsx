@@ -20,7 +20,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import SearchProducts from "./pages/shopping-view/search";
 import AboutUs from "./pages/shopping-view/about";
 import ContactUs from "./pages/shopping-view/contact";
-import { useEffect } from "react";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
